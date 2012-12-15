@@ -48,10 +48,14 @@ class Player(Sprite):
     def update(self, dt):
         speed = 100
         if self.pressed["up"] and not self.pressed["down"]:
-            self.y += speed * dt
+            self.vy = + speed
         elif self.pressed["down"] and not self.pressed["up"]:
-            self.y -= speed * dt
-        elif self.pressed["left"] and not self.pressed["right"]:
-            self.x -= speed * dt
+            self.vy = - speed
+        else:
+            self.vy = 0
+        if self.pressed["left"] and not self.pressed["right"]:
+            self.vx = - speed
         elif self.pressed["right"] and not self.pressed["left"]:
-            self.x += speed * dt
+            self.vx = + speed
+        else:
+            self.vx = 0
