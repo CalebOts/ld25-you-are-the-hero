@@ -9,16 +9,20 @@ window = pyglet.window.Window(width=800, height=600)
 
 from pyglet.window import key
 
-from engine import Engine
+from scene import Scene
 
-engine = Engine()
+scene = Scene(window.width, window.height)
 
 keymap = {
-        key.E : "player up",
-        key.S : "player left",
-        key.D : "player down",
-        key.F : "player right",
-        key.SPACE : "player blink"
+        key.E : "up",
+        key.S : "left",
+        key.D : "down",
+        key.F : "right",
+        key.UP: "up",
+        key.DOWN: "down",
+        key.LEFT: "left",
+        key.RIGHT: "right",
+        key.SPACE : "blink",
 }
 
 pyglet.gl.glClearColor(255, 255, 255, 255)
@@ -26,23 +30,27 @@ pyglet.gl.glClearColor(255, 255, 255, 255)
 fps_counter = pyglet.clock.ClockDisplay()
 
 @window.event
+def on_resize(width, height):
+    scene.resize(width, height)
+
+@window.event
 def on_key_press(sym, mod):
     print "Key press  :", sym, mod
     if sym in keymap:
-        engine.action("+ " + keymap[sym])
+        scene.action("+ " + keymap[sym])
 
 @window.event
 def on_key_release(sym, mod):
     print "Key release:", sym, mod
     if sym in keymap:
-        engine.action("- " + keymap[sym])
+        scene.action("- " + keymap[sym])
 
 @window.event
 def on_draw():
     window.clear()
-    engine.draw()
+    scene.draw()
     fps_counter.draw()
 
-pyglet.clock.schedule_interval(engine.update, 1.0 / 200.0)
+pyglet.clock.schedule_interval(scene.update, 1.0 / 200.0)
 
 pyglet.app.run()

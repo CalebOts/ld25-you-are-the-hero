@@ -6,11 +6,14 @@ pyglet.resource.reindex()
 
 
 class Player(Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         img_left = pyglet.resource.image("player.png")
         img_right = img_left.get_transform(flip_x=True)
         img_blink_left = pyglet.resource.image("player-not-amused.png")
         img_blink_right = img_blink_left.get_transform(flip_x=True)
+        self.speed = 100
+        self.vx = 0
+        self.vy = 0
         self.imgs = {
                 ("left", False) : img_left,
                 ("right", False) : img_right,
@@ -23,7 +26,7 @@ class Player(Sprite):
 
         self.facing = "left"
         self.blinking = False
-        pyglet.sprite.Sprite.__init__(self, img_left, x = 400, y = 400)
+        pyglet.sprite.Sprite.__init__(self, img_left, x = x, y = y)
         self.pressed = {
                 "up" : False,
                 "down" : False,
@@ -42,7 +45,6 @@ class Player(Sprite):
             if action == "blink": self.blinking = False
         self.image = self.imgs[self.facing, self.blinking]
 
-
     def update(self, dt):
         speed = 100
         if self.pressed["up"] and not self.pressed["down"]:
@@ -53,6 +55,3 @@ class Player(Sprite):
             self.x -= speed * dt
         elif self.pressed["right"] and not self.pressed["left"]:
             self.x += speed * dt
-
-        self.x %= 800
-        self.y %= 600
