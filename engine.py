@@ -1,32 +1,14 @@
 import pyglet
+from player import Player
 
 class Engine(object):
     def __init__(self):
-        pyglet.resource.path = ['.', 'data']
-        pyglet.resource.reindex()
-        self.player_image = pyglet.resource.image("player.png")
-        self.player_blink = pyglet.resource.image("player-not-amused.png")
-        self.player = pyglet.sprite.Sprite(self.player_image, x = 400, y = 400)
-        self.player.vx = 0
-        self.player.vy = 0
-        self.player.pressed = {
-                "up" : False,
-                "down" : False,
-                "left" : False,
-                "right" : False
-                }
+        self.player = Player()
 
     def action(self, action):
         state, obj, action = action.split()
         if obj == "player":
-            if state == "+" and action in ("up", "down", "left", "right"):
-                self.player.pressed[action] = True
-            elif state == "-" and action in ("up", "down", "left", "right"):
-                self.player.pressed[action] = False
-            elif state == "+" and action == "blink":
-                self.player.image = self.player_blink
-            elif state == "-" and action == "blink":
-                self.player.image = self.player_image
+            self.player.action(state, action)
 
         print self.player.pressed
 
