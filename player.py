@@ -7,6 +7,7 @@ pyglet.resource.reindex()
 
 class Player(Sprite):
     def __init__(self, x, y):
+        self.sprite_type = "player"
         img_left = pyglet.resource.image("player.png")
         img_right = img_left.get_transform(flip_x=True)
         img_blink_left = pyglet.resource.image("player-not-amused.png")
