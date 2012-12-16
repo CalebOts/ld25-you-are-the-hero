@@ -52,5 +52,6 @@ def on_draw():
     fps_counter.draw()
 
 pyglet.clock.schedule_interval(scene.update, 1.0 / 200.0)
+pyglet.clock.schedule_interval(scene.random_event, 1.0)
 
 pyglet.app.run()
