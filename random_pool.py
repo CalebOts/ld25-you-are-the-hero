@@ -1,11 +1,16 @@
 import random
 import pyglet
+from text import Text
 from player import Player
 
 class RandomPool(object):
-    def __init__(self):
+    def __init__(self, batch = None):
+        self.batch = batch
         simage = pyglet.resource.image("black-block.png")
-        self.pool = [(1, True, ((pyglet.sprite.Sprite, [simage], {}),),)]
+        # [probability, persistence, ((Class, [args], {kwargs}), ...)), ...]
+        self.pool = [
+                (1, True, ((pyglet.sprite.Sprite, [simage], {}),),),
+                (1, False, ((Text, ["You are the hero!", 42], {}),),)]
 
     def __iter__(self):
         return self
@@ -15,8 +20,7 @@ class RandomPool(object):
         probability, persistent, constructors = random.choice(self.pool)
         if probability > random.random():
             for init, args, kwargs in constructors:
-                print init, args, kwargs
-                objects.append(init(*args, **kwargs))
+                objects.append(init(*args, batch = self.batch, **kwargs))
             if not persistent:
                 self.pool.remove((probability, persistent, constructors))
             return objects

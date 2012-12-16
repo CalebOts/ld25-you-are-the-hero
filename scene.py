@@ -3,17 +3,20 @@ import random
 from player import Player
 from random_pool import RandomPool
 
-"""
-    Scene:
-        - if conditions met, add/remove event from pool
-        - for each update, draw random event from pool, remove if necessary
-        - draw events on screen
+from text import Text
 
-        - background -> bg
-        - blockers -> bg,fg
-        - npcs -> bg, fg
-        - foreground -> fg
-a       """
+"""
+Scene:
+    - if conditions met, add/remove event from pool
+    - for each update, draw random event from pool, remove if necessary
+    - draw events on screen
+
+    - background -> bg
+    - blockers -> bg,fg
+    - npcs -> bg, fg
+    - foreground -> fg
+"""
+
 def check_collision(sprite1, sprite2):
     # x1 - w1 // 2 < x2 < x1 + w1 // 2
     # y1 - h1 // 2 < y2 < y1 + h1 // 2
@@ -22,14 +25,17 @@ def check_collision(sprite1, sprite2):
     return (sprite1.x - w1 < sprite2.x < sprite1.x + w1 and
         sprite1.y  - h1 < sprite2.y < sprite1.y + h1)
 
+def printfoo():
+    print "foo"
+
 class Scene(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
         self.buffer_width = 200
-        self.random_pool = RandomPool()
         self.player = Player(x = width // 2, y = height // 2)
         self.batch = pyglet.graphics.Batch()
+        self.random_pool = RandomPool(batch = self.batch)
         pyglet.resource.path = ['.', 'data']
         pyglet.resource.reindex()
         simage = pyglet.resource.image("black-block.png")
@@ -43,14 +49,23 @@ class Scene(object):
         self._npcs = []
         self._collections = [self._sprites, self._scenery, self._blockers,
                 self._bullets, self._labels, self._npcs]
-        [self.add_sprite(
-                pyglet.sprite.Sprite(simage, batch=self.batch, x=x, y=y))
-                for x in range(0, 100, 10)
-                for y in range(0, 100, 10)]
-        print self._sprites
+        #[self.add_sprite(
+        #        pyglet.sprite.Sprite(simage, batch=self.batch, x=x, y=y))
+        #        for x in range(0, 100, 10)
+        #        for y in range(0, 100, 10)]
+ 
+        label = pyglet.text.Label('Hello, world', font_name='Times New Roman',
+                font_size=36, x=self.width//2, y=self.height//2,
+                anchor_x='center', anchor_y='center', batch = self.batch,
+                color = (255, 000, 000, 255))
+        self.add_sprite(label)
+        t = Text('Hello, world, again.', 36, batch = self.batch)
+        t.sprite_type = "scenery"
+        t.x = 100
+        t.y = 100
+        self.add_sprite(t)
 
     def add_sprite(self, sprite):
-        print sprite.x, sprite.y
         self._sprites.append(sprite)
         sprite.batch = self.batch
         try:
@@ -61,7 +76,7 @@ class Scene(object):
             elif sprite.sprite_type == "npc":
                 self._npcs.append(sprite)
             elif sprite.sprite_type == "text":
-                self._labels.append
+                self._labels.append(sprite)
             else: # scenery
                 self._scenery.append(sprite)
         except:
@@ -154,7 +169,7 @@ class Scene(object):
         dy = (self.height - h) // 2
         dx = (self.width - w) // 2
 
-        for sprite in self._scenery + self._npcs + self._bullets:
+        for sprite in self._sprites:
             sprite.x += dx
             sprite.y += dy
 

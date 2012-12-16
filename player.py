@@ -60,3 +60,19 @@ class Player(Sprite):
             self.vx = + speed
         else:
             self.vx = 0
+
+class Troll(object):
+    def __init__(self):
+        self.sprite_type = "npc"
+
+class HaplessVillager(object):
+    def __init__(self):
+        self.sprite_type = "npc"
+
+class Bullet(object):
+    def __init__(self):
+        self.sprite_type = "bullet"
+
+class Text(object):
+    def __init__(self):
+        self.sprite_type = "text"
