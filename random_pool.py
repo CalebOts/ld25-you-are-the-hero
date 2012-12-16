@@ -1,7 +1,6 @@
 import random
 import pyglet
 from text import Text
-from player import Player
 
 class RandomPool(object):
     def __init__(self, batch = None):

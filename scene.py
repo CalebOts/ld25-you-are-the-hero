@@ -1,6 +1,6 @@
 import pyglet
 import random
-from player import Player, Troll
+from sprites import Player, Troll, Bullet
 from random_pool import RandomPool
 
 from text import Text, do_nothing
@@ -27,17 +27,15 @@ def collision(sprite1, sprite2):
     return (sprite1.x - w1 < sprite2.x < sprite1.x + w1 and
         sprite1.y  - h1 < sprite2.y < sprite1.y + h1)
 
-def printfoo():
-    print "foo"
-
 class Scene(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
         self.buffer_width = 200
         self.player = Player(x = width // 2, y = height // 2)
-        self.batch = pyglet.graphics.Batch()
-        self.random_pool = RandomPool(batch = self.batch)
+        self.bg_batch = pyglet.graphics.Batch()
+        self.fg_batch = pyglet.graphics.Batch()
+        self.random_pool = RandomPool(batch = self.bg_batch)
         pyglet.resource.path = ['.', 'data']
         pyglet.resource.reindex()
         simage = pyglet.resource.image("black-block.png")
@@ -54,10 +52,11 @@ class Scene(object):
 
     def add_sprite(self, sprite):
         self._sprites.append(sprite)
-        sprite.batch = self.batch
+        sprite.batch = self.bg_batch
         try:
             if sprite.sprite_type == "bullet":
                 self._bullets.append(sprite)
+                sprite.batch = self.fg_batch
             elif sprite.sprite_type == "blocker":
                 self._blockers.append(sprite)
             elif sprite.sprite_type == "npc":
@@ -78,11 +77,13 @@ class Scene(object):
     def action(self, action):
         state, action = action.split()
         self.player.action(state, action)
+        if state == "+" and action == "blink":
+            self.Bullet()
 
     def draw(self):
-        self.batch.draw()
+        self.bg_batch.draw()
         self.player.draw()
-
+        self.fg_batch.draw()
     def update(self, dt):
         self.player.update(dt)
         bw = self.buffer_width
@@ -96,7 +97,7 @@ class Scene(object):
         for sprite in self._sprites:
             if (sprite.x < - bw or sprite.y < - bw or
                 sprite.x > self.width + bw or sprite.y > self.height + bw):
-                if sprite in self._scenery:
+                if sprite in self._scenery or sprite in self._bullets:
                     self.remove_sprite(sprite)
                 else: # wrap
                     if sprite.x < -bw:
@@ -114,13 +115,15 @@ class Scene(object):
 
 
         for bullet in self._bullets:
-            if collision(bullet, self.player):
-                remove_sprite(bullet)
-                remove_sprite(self.player)
+            bullet.update(dt)
+            #if collision(bullet, self.player):
+                #self.remove_sprite(bullet)
+                #self.game_over()
             for npc in self._npcs:
                 if collision(bullet, npc):
-                    remove_sprite(npc)
-                    remove_sprite(bullet)
+                    self.remove_sprite(npc)
+                    self.remove_sprite(bullet)
+                    npc.on_death()
         for npc in self._npcs:
             npc.update(self.get_state(), dt)
             if collision(npc, self.player):
@@ -137,7 +140,7 @@ class Scene(object):
     def random_event(self, dt):
         for obj in next(self.random_pool):
             (obj.x, obj.y) = self.random_offscreen_point()
-            obj.batch = self.batch
+            obj.batch = self.bg_batch
             self.add_sprite(obj)
 
     def random_offscreen_point(self):
@@ -192,19 +195,19 @@ class Scene(object):
         (x, y) = self.random_point(on_screen=on_screen)
         self.add_sprite(Text(text, 34, (0, 0, 0, 255),
                 x=self.width * 0.5, y=self.height * 0.75,
-                batch=self.batch))
+                batch=self.bg_batch))
 
 
     def Narration(self, text, size=24, on_screen = False):
         (x, y) = self.random_point(on_screen=on_screen)
         self.add_sprite(Text(text, size, (0, 0, 0, 255),
-                x=x, y=y, batch=self.batch))
+                x=x, y=y, batch=self.bg_batch))
 
     def Choice(self, text, size=24, on_select = do_nothing, on_screen = False):
         (x, y) = self.random_point(on_screen=on_screen)
         t = Text(text, size, (0, 0, 255, 255),
                 x = x, y = y,
-                batch=self.batch, on_select = None)
+                batch=self.bg_batch, on_select = None)
         def on_select_wrapper():
             t.color = (255, 0, 0, 255)
             self.fade_text()
@@ -212,13 +215,20 @@ class Scene(object):
         t.on_select = on_select_wrapper
         self.add_sprite(t)
 
-    def Troll(self, on_death):
+    def Troll(self, on_death = do_nothing):
         (x, y) = self.random_point(on_screen=False)
         self.add_sprite(Troll(x, y, on_death = on_death))
 
     def Villager(self): pass
     def House(self): pass
     def FadeOut(self): pass
+
+    def Bullet(self):
+        x = self.player.x
+        y = self.player.y
+        vx = self.player.vx + self.player.last_vx * 0.5
+        vy = self.player.vy + self.player.last_vy * 0.5
+        self.add_sprite(Bullet(x, y, vx, vy))
 
     def game_over(self):
         self.Narration("And this is how it ends.", on_screen = True)

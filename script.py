@@ -1,4 +1,7 @@
+from pyglet import clock
+
 s = None
+
 
 def start(scene):
     print "start"
@@ -16,6 +19,10 @@ def scene1():
     s.Narration('Again')
     s.Narration('Alone')
     s.Troll(on_death=scene2)
+    clock.schedule_interval(spawn_troll, 5)
+
+def spawn_troll(dt):
+    s.Troll()
 
 def scene2():
     print "scene2"
@@ -24,7 +31,8 @@ def scene2():
     s.Narration('Why me?')
     s.Narration('Alone')
     s.Narration('This is not fair')
-    s.Troll(on_death=pre_village)
+    clock.unschedule(spawn_troll)
+    s.Choice("I got enough", on_select=pre_village)
 
 def pre_village():
     s.Narration("This time")
