@@ -1,6 +1,6 @@
 import pyglet
 import random
-from player import Player
+from player import Player, Troll
 from random_pool import RandomPool
 
 from text import Text, do_nothing
@@ -16,6 +16,8 @@ Scene:
     - npcs -> bg, fg
     - foreground -> fg
 """
+
+
 
 def collision(sprite1, sprite2):
     # x1 - w1 // 2 < x2 < x1 + w1 // 2
@@ -99,12 +101,16 @@ class Scene(object):
                 else: # wrap
                     if sprite.x < -bw:
                         sprite.x += self.width + 2 * bw
+                        sprite.y += bw
                     if sprite.x > self.width + bw:
                         sprite.x -= self.width + 2 * bw
+                        sprite.y -= bw
                     if sprite.y < -bw:
                         sprite.y += self.height + 2 * bw
+                        sprite.x += bw
                     if sprite.y > self.height + bw:
                         sprite.y -= self.height + 2 * bw
+                        sprite.x -= bw
 
 
         for bullet in self._bullets:
@@ -114,17 +120,19 @@ class Scene(object):
             for npc in self._npcs:
                 if collision(bullet, npc):
                     remove_sprite(npc)
-                    remove_sprite(self.player)
+                    remove_sprite(bullet)
         for npc in self._npcs:
+            npc.update(self.get_state(), dt)
             if collision(npc, self.player):
-                remove_sprite(npc)
-                remove_sprite(self.player)
+                self.game_over()
 
         for text in self._labels:
             if collision(self.player, text):
                 text.on_select()
 
-
+    def get_state(self):
+        return {"player": (self.player.x, self.player.y),
+                "bullets": ((b.x, b.y) for b in self._bullets)}
 
     def random_event(self, dt):
         for obj in next(self.random_pool):
@@ -175,6 +183,8 @@ class Scene(object):
             sprite.y += dy
 
     def fade_text(self):
+        for text in self._labels:
+            text.color = (0, 0, 0, 128)
         self._scenery.extend(self._labels)
         self._labels = []
 
@@ -202,7 +212,13 @@ class Scene(object):
         t.on_select = on_select_wrapper
         self.add_sprite(t)
 
-    def Troll(self, on_death): pass
+    def Troll(self, on_death):
+        (x, y) = self.random_point(on_screen=False)
+        self.add_sprite(Troll(x, y, on_death = on_death))
+
     def Villager(self): pass
     def House(self): pass
     def FadeOut(self): pass
+
+    def game_over(self):
+        self.Narration("And this is how it ends.", on_screen = True)

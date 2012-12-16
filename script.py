@@ -14,6 +14,16 @@ def scene1():
     s.Narration('Sending me into the snow-storm')
     s.Narration('Without backup')
     s.Narration('Again')
+    s.Narration('Alone')
+    s.Troll(on_death=scene2)
+
+def scene2():
+    print "scene2"
+    s.Narration('Why me?')
+    s.Narration('Alone')
+    s.Narration('Why me?')
+    s.Narration('Alone')
+    s.Narration('This is not fair')
     s.Troll(on_death=pre_village)
 
 def pre_village():
@@ -38,4 +48,3 @@ def ending():
     s.Narration("And it wasn't even the same village")
     s.Narration("The end")
     s.Fadeout()
-

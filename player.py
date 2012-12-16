@@ -4,6 +4,7 @@ from pyglet.sprite import Sprite
 pyglet.resource.path = ['.', 'data']
 pyglet.resource.reindex()
 
+def do_nothing(): pass
 
 class Player(Sprite):
     def __init__(self, x, y):
@@ -47,7 +48,7 @@ class Player(Sprite):
         self.image = self.imgs[self.facing, self.blinking]
 
     def update(self, dt):
-        speed = 100
+        speed = self.speed
         if self.pressed["up"] and not self.pressed["down"]:
             self.vy = + speed
         elif self.pressed["down"] and not self.pressed["up"]:
@@ -61,9 +62,32 @@ class Player(Sprite):
         else:
             self.vx = 0
 
-class Troll(object):
-    def __init__(self):
+class Troll(Sprite):
+    def __init__(self, x, y, on_death = do_nothing):
         self.sprite_type = "npc"
+        img = pyglet.resource.image("player.png")
+        self.speed = 100
+        self.vx = 0
+        self.vy = 0
+        img.anchor_x = img.width // 2
+        img.anchor_y = img.height // 2
+        self.on_death = on_death
+
+        pyglet.sprite.Sprite.__init__(self, img, x = x, y = y)
+
+    def update(self, state, dt):
+        print dt
+        (px, py) = state["player"]
+        speed = self.speed
+        dx = px - self.x
+        dy = py - self.y
+        if dx > self.speed: dx = self.speed
+        if dx < -self.speed: dx = -self.speed
+        if dy > self.speed: dy = self.speed
+        if dy < -self.speed: dy = -self.speed
+        self.x += dx * dt
+        self.y += dy * dt
+
 
 class HaplessVillager(object):
     def __init__(self):
