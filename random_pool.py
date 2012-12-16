@@ -8,9 +8,7 @@ class RandomPool(object):
         self.batch = batch
         simage = pyglet.resource.image("black-block.png")
         # [probability, persistence, ((Class, [args], {kwargs}), ...)), ...]
-        self.pool = [
-                (1, True, ((pyglet.sprite.Sprite, [simage], {}),),),
-                (1, False, ((Text, ["You are the hero!", 42], {}),),)]
+        self.pool = [ (1, True, ((pyglet.sprite.Sprite, [simage], {}),),),]
 
     def __iter__(self):
         return self

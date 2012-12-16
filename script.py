@@ -1,10 +1,41 @@
+s = None
+
+def start(scene):
+    print "start"
+    global s
+    s = scene
+    s.Title('You are the Hero', on_screen = True)
+    s.Narration('All the villagers said', on_screen = True)
+    s.Choice("I was eager", on_select = scene1, on_screen = True)
+    s.Choice("I wasn't eager", on_select = scene1, on_screen = True)
 
 def scene1():
-    pool.add(1, False, (Text, [], {"text":"title", "size": 16})
-    pool.add(1, False, (Text, [], {"text": "YES"})
-    pool.add(1, False, (Text, [], {"text": "NO"})
+    print "scene1"
+    s.Narration('Sending me into the snow-storm')
+    s.Narration('Without backup')
+    s.Narration('Again')
+    s.Troll(on_death=pre_village)
 
-def load_events():
-    pool.add(0.56, False, (Troll, {"on_death":lambda: print "the troll is dead"}
-    pool.add(0.56, False, (Text, {"on_select": scene1})
+def pre_village():
+    s.Narration("This time")
+    s.Narration("They will pay")
+    s.Troll(on_death=village_scene)
+
+def village_scene():
+    s.Narration("This time")
+    s.Narration("They will say")
+    s.Title("You are the Villain")
+    s.Villager()
+    s.Villager()
+    s.Villager()
+    s.Villager()
+    s.House()
+    s.House()
+    s.House()
+    s.House()
+
+def ending():
+    s.Narration("And it wasn't even the same village")
+    s.Narration("The end")
+    s.Fadeout()
 

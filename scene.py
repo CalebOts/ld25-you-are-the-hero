@@ -3,7 +3,7 @@ import random
 from player import Player
 from random_pool import RandomPool
 
-from text import Text
+from text import Text, do_nothing
 
 """
 Scene:
@@ -17,7 +17,7 @@ Scene:
     - foreground -> fg
 """
 
-def check_collision(sprite1, sprite2):
+def collision(sprite1, sprite2):
     # x1 - w1 // 2 < x2 < x1 + w1 // 2
     # y1 - h1 // 2 < y2 < y1 + h1 // 2
     w1 = sprite1.width // 2
@@ -49,21 +49,6 @@ class Scene(object):
         self._npcs = []
         self._collections = [self._sprites, self._scenery, self._blockers,
                 self._bullets, self._labels, self._npcs]
-        #[self.add_sprite(
-        #        pyglet.sprite.Sprite(simage, batch=self.batch, x=x, y=y))
-        #        for x in range(0, 100, 10)
-        #        for y in range(0, 100, 10)]
- 
-        label = pyglet.text.Label('Hello, world', font_name='Times New Roman',
-                font_size=36, x=self.width//2, y=self.height//2,
-                anchor_x='center', anchor_y='center', batch = self.batch,
-                color = (255, 000, 000, 255))
-        self.add_sprite(label)
-        t = Text('Hello, world, again.', 36, batch = self.batch)
-        t.sprite_type = "scenery"
-        t.x = 100
-        t.y = 100
-        self.add_sprite(t)
 
     def add_sprite(self, sprite):
         self._sprites.append(sprite)
@@ -129,11 +114,17 @@ class Scene(object):
             for npc in self._npcs:
                 if collision(bullet, npc):
                     remove_sprite(npc)
-                    remove_sprite(player)
+                    remove_sprite(self.player)
         for npc in self._npcs:
-            if collision(npc, player):
+            if collision(npc, self.player):
                 remove_sprite(npc)
-                remove_sprite(player)
+                remove_sprite(self.player)
+
+        for text in self._labels:
+            if collision(self.player, text):
+                text.on_select()
+
+
 
     def random_event(self, dt):
         for obj in next(self.random_pool):
@@ -156,8 +147,18 @@ class Scene(object):
         else: # west
             x = random.randint(self.width, self.width + bw)
             y = random.randint(0, self.height)
-
         return x, y
+
+    def random_onscreen_point(self):
+        x = random.randint(0, self.width)
+        y = random.randint(0, self.height)
+        return x, y
+
+    def random_point(self, on_screen = True):
+        if on_screen:
+            return self.random_onscreen_point()
+        else:
+            return self.random_offscreen_point()
 
     def resize(self, width, height):
         h = self.height
@@ -173,3 +174,35 @@ class Scene(object):
             sprite.x += dx
             sprite.y += dy
 
+    def fade_text(self):
+        self._scenery.extend(self._labels)
+        self._labels = []
+
+    def Title(self, text, on_screen = True):
+        (x, y) = self.random_point(on_screen=on_screen)
+        self.add_sprite(Text(text, 34, (0, 0, 0, 255),
+                x=self.width * 0.5, y=self.height * 0.75,
+                batch=self.batch))
+
+
+    def Narration(self, text, size=24, on_screen = False):
+        (x, y) = self.random_point(on_screen=on_screen)
+        self.add_sprite(Text(text, size, (0, 0, 0, 255),
+                x=x, y=y, batch=self.batch))
+
+    def Choice(self, text, size=24, on_select = do_nothing, on_screen = False):
+        (x, y) = self.random_point(on_screen=on_screen)
+        t = Text(text, size, (0, 0, 255, 255),
+                x = x, y = y,
+                batch=self.batch, on_select = None)
+        def on_select_wrapper():
+            t.color = (255, 0, 0, 255)
+            self.fade_text()
+            on_select()
+        t.on_select = on_select_wrapper
+        self.add_sprite(t)
+
+    def Troll(self, on_death): pass
+    def Villager(self): pass
+    def House(self): pass
+    def FadeOut(self): pass

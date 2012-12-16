@@ -10,8 +10,10 @@ window = pyglet.window.Window(width=800, height=600)
 from pyglet.window import key
 
 from scene import Scene
+import script
 
 scene = Scene(window.width, window.height)
+script.start(scene)
 
 keymap = {
         key.E : "up",
