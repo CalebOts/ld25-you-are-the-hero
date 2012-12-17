@@ -5,7 +5,7 @@ from text import Text
 class RandomPool(object):
     def __init__(self, batch = None):
         self.batch = batch
-        simage = pyglet.resource.image("black-block.png")
+        simage = pyglet.resource.image("snow.png")
         # [probability, persistence, ((Class, [args], {kwargs}), ...)), ...]
         self.pool = [ (1, True, ((pyglet.sprite.Sprite, [simage], {}),),),]
 

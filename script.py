@@ -8,8 +8,6 @@ def start(scene):
     print "start"
     global s
     s = scene
-    village_scene(0)
-    return
     s.Title('You are the Hero', on_screen = True)
     s.Narration('All the villagers said', on_screen = True)
     s.Choice("I was eager", on_select = scene1, on_screen = True)
@@ -68,14 +66,16 @@ def village_scene(dt):
     s.Narration("They will say")
     s.Title("You are the Villain")
     clock.schedule_interval(village_callback, 5)
-    for i in range(counter):
+    for i in range(counter + 4):
         s.Villager(on_death = decrement_counter)
 
 
-def ending():
-    s.Narration("And it wasn't even the same village")
-    s.Narration("And it wasn't even the same village")
-    s.Narration("And it wasn't even the same village")
-    s.Narration("And it wasn't even the same village")
-    s.Narration("The end.")
+def fade_out(dt):
     s.fade_out()
+
+def ending():
+    s.Title("But it was another village")
+    s.Title("But it was another village")
+    s.Narration("The end.")
+    s.Narration("The end.")
+    clock.schedule_once(fade_out, 10)

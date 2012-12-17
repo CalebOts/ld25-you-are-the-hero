@@ -38,9 +38,6 @@ class Scene(object):
         self.random_pool = RandomPool(batch = self.bg_batch)
         pyglet.resource.path = ['.', 'data']
         pyglet.resource.reindex()
-        simage = pyglet.resource.image("black-block.png")
-        simage.anchor_x = simage.width // 2
-        simage.anchor_y = simage.width // 2
         self._sprites = []
         self._scenery = []
         self._blockers = []
@@ -228,9 +225,8 @@ class Scene(object):
 
     def House(self):
         (x, y) = self.random_point(on_screen=False)
-        img = pyglet.resource.image("black-block.png")
+        img = pyglet.resource.image("house.png")
         house = pyglet.sprite.Sprite(img, x=x, y=y)
-        house.scale = 2.5
         house.sprite_type = "scenery"
         self.add_sprite(house)
 

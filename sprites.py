@@ -73,7 +73,7 @@ class Player(Sprite):
 class Troll(Sprite):
     def __init__(self, x, y, on_death = do_nothing):
         self.sprite_type = "npc"
-        img = pyglet.resource.image("player.png")
+        img = pyglet.resource.image("troll.png")
         self.speed = 100
         self.vx = 0
         self.vy = 0
@@ -99,8 +99,8 @@ class Troll(Sprite):
 class HaplessVillager(Sprite):
     def __init__(self, x, y, on_death = do_nothing):
         self.sprite_type = "npc"
-        img = pyglet.resource.image("player.png")
-        self.speed = 100
+        img = pyglet.resource.image("villager.png")
+        self.speed = 25
         self.vx = 0
         self.vy = 0
         img.anchor_x = img.width // 2
@@ -108,20 +108,22 @@ class HaplessVillager(Sprite):
         self.on_death = on_death
 
         pyglet.sprite.Sprite.__init__(self, img, x = x, y = y)
-        self.scale = 1.5
 
     def update(self, state, dt):
-        #dx = self.speed * (random() - 0.5)
-        #dy = self.speed * (random() - 0.5)
-        dx = 0
-        dy = 0
+        (px, py) = state["player"]
+        dx = self.x - px
+        dy = self.y -py
+        if dx > self.speed: dx = self.speed
+        if dx < -self.speed: dx = -self.speed
+        if dy > self.speed: dy = self.speed
+        if dy < -self.speed: dy = -self.speed
         self.x += dx * dt
         self.y += dy * dt
 
 class Bullet(Sprite):
     def __init__(self, x, y, vx, vy, on_death = do_nothing):
         self.sprite_type = "bullet"
-        img = pyglet.resource.image("player.png")
+        img = pyglet.resource.image("bullet.png")
         self.speed = 100
         self.vx = vx
         self.vy = vy
@@ -130,7 +132,6 @@ class Bullet(Sprite):
         self.on_death = on_death
 
         pyglet.sprite.Sprite.__init__(self, img, x = x, y = y)
-        self.scale = 0.1
 
     def update(self, dt):
         self.x += self.vx * dt
