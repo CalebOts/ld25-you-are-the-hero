@@ -5,19 +5,6 @@ from random_pool import RandomPool
 
 from text import Text, do_nothing
 
-"""
-Scene:
-    - if conditions met, add/remove event from pool
-    - for each update, draw random event from pool, remove if necessary
-    - draw events on screen
-
-    - background -> bg
-    - blockers -> bg,fg
-    - npcs -> bg, fg
-    - foreground -> fg
-"""
-
-
 
 def collision(sprite1, sprite2):
     # x1 - w1 // 2 < x2 < x1 + w1 // 2
@@ -232,7 +219,6 @@ class Scene(object):
 
     def fade_out(self):
         pass
-
 
     def Bullet(self):
         x = self.player.x

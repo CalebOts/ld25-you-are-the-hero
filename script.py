@@ -16,7 +16,7 @@ def start(scene):
 def scene1():
     print "scene1"
     s.Narration('Sending me into the snow-storm')
-    s.Narration('Without backup')
+    s.Narration('Without any help')
     s.Narration('Again')
     s.Narration('Alone')
     clock.schedule_interval(spawn_troll, 5)

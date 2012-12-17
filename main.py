@@ -5,7 +5,8 @@ sys.path = ['', 'pyglet-1.1.4'] + sys.path
 
 import pyglet
 
-window = pyglet.window.Window(width=800, height=600)
+window = pyglet.window.Window(width=800, height=600,
+            caption = "You are the Hero")
 
 from pyglet.window import key
 
