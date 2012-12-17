@@ -1,6 +1,6 @@
 import pyglet
 import random
-from sprites import Player, Troll, Bullet
+from sprites import Player, Troll, Bullet, HaplessVillager
 from random_pool import RandomPool
 
 from text import Text, do_nothing
@@ -72,7 +72,10 @@ class Scene(object):
         for collection in self._collections:
             if sprite in collection:
                 collection.remove(sprite)
-        sprite.delete()
+        try:
+            sprite.delete()
+        except AttributeError as e:
+            print "Warning:", e
 
     def action(self, action):
         state, action = action.split()
@@ -120,7 +123,7 @@ class Scene(object):
                 #self.remove_sprite(bullet)
                 #self.game_over()
             for npc in self._npcs:
-                if collision(bullet, npc):
+                if collision(npc, bullet):
                     self.remove_sprite(npc)
                     self.remove_sprite(bullet)
                     npc.on_death()
@@ -219,9 +222,21 @@ class Scene(object):
         (x, y) = self.random_point(on_screen=False)
         self.add_sprite(Troll(x, y, on_death = on_death))
 
-    def Villager(self): pass
-    def House(self): pass
-    def FadeOut(self): pass
+    def Villager(self, on_death = do_nothing):
+        (x, y) = self.random_point(on_screen=False)
+        self.add_sprite(HaplessVillager(x, y, on_death = on_death))
+
+    def House(self):
+        (x, y) = self.random_point(on_screen=False)
+        img = pyglet.resource.image("black-block.png")
+        house = pyglet.sprite.Sprite(img, x=x, y=y)
+        house.scale = 2.5
+        house.sprite_type = "scenery"
+        self.add_sprite(house)
+
+    def fade_out(self):
+        pass
+
 
     def Bullet(self):
         x = self.player.x

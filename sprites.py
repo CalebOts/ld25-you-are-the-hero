@@ -82,10 +82,10 @@ class Troll(Sprite):
         self.on_death = on_death
 
         pyglet.sprite.Sprite.__init__(self, img, x = x, y = y)
+        self.scale = 0.5
 
     def update(self, state, dt):
         (px, py) = state["player"]
-        speed = self.speed
         dx = px - self.x
         dy = py - self.y
         if dx > self.speed: dx = self.speed
@@ -96,9 +96,27 @@ class Troll(Sprite):
         self.y += dy * dt
 
 
-class HaplessVillager(object):
-    def __init__(self):
+class HaplessVillager(Sprite):
+    def __init__(self, x, y, on_death = do_nothing):
         self.sprite_type = "npc"
+        img = pyglet.resource.image("player.png")
+        self.speed = 100
+        self.vx = 0
+        self.vy = 0
+        img.anchor_x = img.width // 2
+        img.anchor_y = img.height // 2
+        self.on_death = on_death
+
+        pyglet.sprite.Sprite.__init__(self, img, x = x, y = y)
+        self.scale = 1.5
+
+    def update(self, state, dt):
+        #dx = self.speed * (random() - 0.5)
+        #dy = self.speed * (random() - 0.5)
+        dx = 0
+        dy = 0
+        self.x += dx * dt
+        self.y += dy * dt
 
 class Bullet(Sprite):
     def __init__(self, x, y, vx, vy, on_death = do_nothing):
@@ -112,11 +130,8 @@ class Bullet(Sprite):
         self.on_death = on_death
 
         pyglet.sprite.Sprite.__init__(self, img, x = x, y = y)
+        self.scale = 0.1
 
     def update(self, dt):
         self.x += self.vx * dt
         self.y += self.vy * dt
-
-class Text(object):
-    def __init__(self):
-        self.sprite_type = "text"

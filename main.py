@@ -37,13 +37,13 @@ def on_resize(width, height):
 
 @window.event
 def on_key_press(sym, mod):
-    print "Key press  :", sym, mod
+    #print "Key press  :", sym, mod
     if sym in keymap:
         scene.action("+ " + keymap[sym])
 
 @window.event
 def on_key_release(sym, mod):
-    print "Key release:", sym, mod
+    #print "Key release:", sym, mod
     if sym in keymap:
         scene.action("- " + keymap[sym])
 
